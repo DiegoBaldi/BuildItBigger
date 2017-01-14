@@ -1,0 +1,32 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task testWithAppEngineTask{
+    project(":backend").afterEvaluate { backend ->
+        backend.extensions.appengine.daemon = true
+    }
+    dependsOn ':backend:appengineRun', ':app:connectedAndroidTest'
+    doLast {
+        println "Test with App Engine is Done"
+    }
+}
+tasks.getByPath(":app:connectedAndroidTest").mustRunAfter tasks.getByPath(":backend:appengineRun")
+testWithAppEngineTask.finalizedBy ':backend:appengineStop'
+
